@@ -1,6 +1,5 @@
 const request = require("supertest");
 const app = require("../app");
-require("../models");
 
 const URL_BASE = "/api/v1/users";
 let TOKEN;
@@ -82,7 +81,7 @@ test("POST -> ' '/api/v1/users/login' should resturn status code 401", async () 
   expect(res.status).toBe(401);
 });
 
-test("DELETE -> ' '/api/v1/users/:id' should resturn status code 204", async () => {
+test("DELETE -> '/api/v1/users/:id' should resturn status code 204", async () => {
   const res = await request(app)
     .delete(`${URL_BASE}/${userId}`)
     .set("Authorization", `Bearer ${TOKEN}`);
