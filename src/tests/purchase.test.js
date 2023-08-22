@@ -3,24 +3,29 @@ const app = require("../app");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
 
-const URL_BASE = "/api/v1/users";
-const URL_BASE_PURCHASE = "/api/v1/purchase";
+require("../models");
+
+const URL_BASE_USERS = "/api/v1/users";
+const URL_BASE = "/api/v1/purchase";
 
 let TOKEN;
 let userId;
 let productBody;
 let product;
+let bodyCart;
 
 beforeAll(async () => {
+  //Inicio de sesion
   const user = {
     email: "estebanbmth99@gmail.com",
     password: "7972",
   };
-  const res = await request(app).post(`${URL_BASE}/login`).send(user);
+  const res = await request(app).post(`${URL_BASE_USERS}/login`).send(user);
 
   TOKEN = res.body.token;
   userId = res.body.user.id;
 
+  //PRODUCT
   productBody = {
     title: "productTest",
     description: "lorem20",
@@ -28,39 +33,40 @@ beforeAll(async () => {
   };
   product = await Product.create(productBody);
 
-  const bodyCart = {
+  //CART
+  bodyCart = {
     quantity: 1,
     productId: product.id,
   };
 
   await request(app)
-    .post("api/v1/cart")
+    .post("/api/v1/cart")
     .send(bodyCart)
     .set("Authorization", `Bearer ${TOKEN}`);
 });
 
-test("POST -> '/api/v1/purchase' should return status code 201 and res.body.quantity === product.quantity", async () => {
+test("POST 'URL_BASE', should return status code 201 and res.body.quantity ===bodyCart.quantity", async () => {
   const res = await request(app)
-    .post(URL_BASE_PURCHASE)
+    .post(URL_BASE)
     .set("Authorization", `Bearer ${TOKEN}`);
 
   expect(res.status).toBe(201);
   expect(res.body[0].quantity).toBe(bodyCart.quantity);
+});
+
+test("GET -> 'URL_BASE',should return status code 200 res.body.length === 1", async () => {
+  const res = await request(app)
+    .get(URL_BASE)
+    .set("Authorization", `Bearer ${TOKEN}`);
+
+  expect(res.status).toBe(200);
+  expect(res.body).toBeDefined();
+  expect(res.body).toHaveLength(1);
+  expect(res.body[0].userId).toBe(userId);
+  expect(res.body[0].product).toBeDefined();
+  expect(res.body[0].product.id).toBe(product.id);
+  expect(res.body[0].product.productImgs).toBeDefined();
+  expect(res.body[0].product.productImgs).toHaveLength(0);
 
   await product.destroy();
 });
-
-// test("GET -> '/api/v1/purchase' should resturn status code 200 and res.body to have length === 1", async () => {
-//   const res = await request(app)
-//     .get(URL_BASE_PURCHASE)
-//     .set("Authorization", `Bearer ${TOKEN}`);
-
-//   expect(res.status).toBe(200);
-//   expect(res.body).toBeDefined();
-//   expect(res.body).toHaveLength(1);
-//   expect(res.body[0].userId).toBe(userId);
-//   expect(res.body[0].product).toBeDefined();
-//   expect(res.body[0].product.id).toBe(product.id);
-
-//   await product.destroy();
-// });

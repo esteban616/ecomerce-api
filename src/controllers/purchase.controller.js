@@ -7,7 +7,7 @@ const ProductImg = require("../models/productImg");
 
 const getAll = catchError(async (req, res) => {
   const userId = req.user.id;
-  const results = await Purchase.findAll({
+  const result = await Purchase.findAll({
     where: { userId },
     include: [
       {
@@ -25,7 +25,7 @@ const getAll = catchError(async (req, res) => {
       },
     ],
   });
-  return res.json(results);
+  return res.json(result);
 });
 
 const create = catchError(async (req, res) => {
