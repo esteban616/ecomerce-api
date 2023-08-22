@@ -4,6 +4,7 @@ const {
   getOne,
   remove,
   update,
+  setImage,
 } = require("../controllers/product.controller");
 const express = require("express");
 const { verifyJWT } = require("../utils/verifyJWT");
@@ -18,4 +19,5 @@ routerProduct
   .delete(verifyJWT, remove)
   .put(verifyJWT, update);
 
+routerProduct.route("/:id/images").post(setImage);
 module.exports = routerProduct;

@@ -33,7 +33,10 @@ beforeAll(async () => {
     productId: product.id,
   };
 
-  await Cart.create(bodyCart);
+  await request(app)
+    .post("api/v1/cart")
+    .send(bodyCart)
+    .set("Authorization", `Bearer ${TOKEN}`);
 });
 
 test("POST -> '/api/v1/purchase' should return status code 201 and res.body.quantity === product.quantity", async () => {
@@ -42,4 +45,22 @@ test("POST -> '/api/v1/purchase' should return status code 201 and res.body.quan
     .set("Authorization", `Bearer ${TOKEN}`);
 
   expect(res.status).toBe(201);
+  expect(res.body[0].quantity).toBe(bodyCart.quantity);
+
+  await product.destroy();
 });
+
+// test("GET -> '/api/v1/purchase' should resturn status code 200 and res.body to have length === 1", async () => {
+//   const res = await request(app)
+//     .get(URL_BASE_PURCHASE)
+//     .set("Authorization", `Bearer ${TOKEN}`);
+
+//   expect(res.status).toBe(200);
+//   expect(res.body).toBeDefined();
+//   expect(res.body).toHaveLength(1);
+//   expect(res.body[0].userId).toBe(userId);
+//   expect(res.body[0].product).toBeDefined();
+//   expect(res.body[0].product.id).toBe(product.id);
+
+//   await product.destroy();
+// });
