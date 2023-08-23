@@ -22,20 +22,20 @@ beforeAll(async () => {
   TOKEN = res.body.token;
 
   const categoryBody = {
-    name: "GOW",
+    name: "home",
   };
 
   category = await Category.create(categoryBody);
 
   product = {
-    title: "Lg oled 55",
+    title: "GOW",
     description: "lroem10",
-    price: 20.3,
+    price: 9.99,
     categoryId: category.id,
   };
 });
 
-test("POST -> 'URL_BASE', should resturn status code 201 and res.body.title = product.title", async () => {
+test("POST -> '/api/v1/products', should resturn status code 201 and res.body.title = product.title", async () => {
   const res = await request(app)
     .post(URL_BASE)
     .send(product)
@@ -48,7 +48,7 @@ test("POST -> 'URL_BASE', should resturn status code 201 and res.body.title = pr
   expect(res.body.title).toBe(product.title);
 });
 
-test("GET -> 'URL_BASE', should resturn status code 200 and res.body.legnth = 1", async () => {
+test("GET -> '/api/v1/products', should resturn status code 200 and res.body.legnth = 1", async () => {
   const res = await request(app).get(URL_BASE);
 
   expect(res.status).toBe(200);
@@ -60,7 +60,7 @@ test("GET -> 'URL_BASE', should resturn status code 200 and res.body.legnth = 1"
   expect(res.body[0].productImgs).toHaveLength(0);
 });
 
-test("GET -> 'URL_BASE?category=id', should resturn status code 200 and res.body.legnth = 1, res.body[0].category to be defined and res.body[0].category = category.id", async () => {
+test("GET -> '/api/v1/products?category=id', should resturn status code 200 and res.body.legnth = 1, res.body[0].category to be defined and res.body[0].category = category.id", async () => {
   const res = await request(app) // /api/v1/products?category=1
     .get(`${URL_BASE}?category=${category.id}`);
 
@@ -73,7 +73,7 @@ test("GET -> 'URL_BASE?category=id', should resturn status code 200 and res.body
   expect(res.body[0].productImgs).toHaveLength(0);
 });
 
-test("GET ONE -> 'URL_BASE/:id', should resturn status code 200 and res.body.title = product.title", async () => {
+test("GET ONE -> '/api/v1/products/:id', should resturn status code 200 and res.body.title = product.title", async () => {
   const res = await request(app).get(`${URL_BASE}/${productId}`);
 
   expect(res.status).toBe(200);
@@ -85,7 +85,7 @@ test("GET ONE -> 'URL_BASE/:id', should resturn status code 200 and res.body.tit
   expect(res.body.productImgs).toHaveLength(0);
 });
 
-test("PUT -> 'URL_BASE/:id', should resturn status code 200 and res.body.title = productUpdate.title", async () => {
+test("PUT -> '/api/v1/products/:id', should resturn status code 200 and res.body.title = productUpdate.title", async () => {
   const productUpdate = {
     title: "Samsung oled 55",
   };
@@ -100,7 +100,7 @@ test("PUT -> 'URL_BASE/:id', should resturn status code 200 and res.body.title =
   expect(res.body.title).toBe(productUpdate.title);
 });
 
-test("POST -> 'URL_BASE/:id/images', should return status code 200 and res.body.length ===1", async () => {
+test("POST -> '/api/v1/products/:id/images', should return status code 200 and res.body.length ===1", async () => {
   const imageBody = {
     url: "lorem10",
     filename: "lorem",
@@ -109,15 +109,16 @@ test("POST -> 'URL_BASE/:id/images', should return status code 200 and res.body.
   image = await ProductImg.create(imageBody);
   const res = await request(app)
     .post(`${URL_BASE}/${productId}/images`)
-    .send(image.id.toString())
+    .send([image.id])
     .set("Authorization", `Bearer ${TOKEN}`);
 
   expect(res.status).toBe(200);
   expect(res.body).toBeDefined();
   expect(res.body).toHaveLength(1);
+  expect(res.body[0].url).toBe(imageBody.url);
 });
 
-test("DELET -> 'URL_BASE/:id', should resturn status code 204", async () => {
+test("DELET -> '/api/v1/products/:id', should resturn status code 204", async () => {
   const res = await request(app)
     .delete(`${URL_BASE}/${productId}`)
     .set("Authorization", `Bearer ${TOKEN}`);
