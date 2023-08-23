@@ -1,7 +1,7 @@
 const request = require("supertest");
 const app = require("../app");
 const Category = require("../models/Category");
-const ProductImg = require("../models/productImg");
+const ProductImg = require("../models/ProductImg");
 require("../models");
 
 const URL_BASE = "/api/v1/products";
