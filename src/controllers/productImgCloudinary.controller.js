@@ -1,5 +1,5 @@
 // función creada anteriormente en utils
-const ProductImg = require("../models/productImg");
+const ProductImg = require("../models/ProductImg");
 const catchError = require("../utils/catchError");
 const {
   uploadToCloudinary,
